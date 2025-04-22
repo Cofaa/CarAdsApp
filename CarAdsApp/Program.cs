@@ -1,7 +1,18 @@
+using CarAdsApp.Services;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDistributedMemoryCache(); // Dodavanje keširanja u memoriji
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Postavljanje vremena isteka sesije
+    options.Cookie.HttpOnly = true; // Postavljanje kolacica kao HttpOnly
+    options.Cookie.IsEssential = true; // Postavljanje kolacica kao obaveznog
+});
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<UserServices>(); // Registracija servisa za korisnike
 
 var app = builder.Build();
 
@@ -18,10 +29,12 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseSession(); // KorisnicSke sesije
+
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=User}/{action=Register}/{id?}");
 
 app.Run();

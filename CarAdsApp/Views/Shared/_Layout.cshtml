@@ -26,6 +26,24 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
+                    <ul class="navbar-nav">
+                        @if (Context.Session.Keys.Contains("UserId"))
+                        {
+                        <li class="nav-item">
+                            <form asp-controller="User" asp-action="Logout" method="post" class="d-inline">
+                                <button class="btn btn-link nav-link" type="submit">
+                                    Logout (@Context.Session.GetString("Username"))
+                                </button>
+                            </form>
+                        </li>
+                        }
+                        else
+                        {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="User" asp-action="Login">Login</a>
+                        </li>
+                        }
+            </ul>
                 </div>
             </div>
         </nav>
