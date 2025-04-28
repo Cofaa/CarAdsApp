@@ -13,6 +13,7 @@ builder.Services.AddSession(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<UserServices>(); // Registracija servisa za korisnike
+builder.Services.AddScoped<OglasiServices>(); // Registracija servisa za oglase
 
 var app = builder.Build();
 

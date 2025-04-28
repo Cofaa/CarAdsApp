@@ -1,0 +1,39 @@
+﻿@model CarAdsApp.Models.Oglas
+
+@{
+	ViewData["Title"] = "Dodaj Oglas";
+}
+
+<h2 class="mb-3">Dodaj Oglas</h2>
+<div asp-validation-summary="All" class="text-danger"></div>
+
+
+<form asp-action="DodajOglas" method="post" class="w-50">
+	@Html.AntiForgeryToken()
+	<div class="mb-2">
+		<label asp-for="Marka" class="form-label"></label>
+			<input asp-for="Marka" class="form-control" />
+			<span asp-validation-for="Marka" class="text-danger"></span>
+	</div>
+	<div class="mb-2">
+		<label asp-for="Naziv" class="form-label"></label>
+			<input asp-for="Naziv" class="form-control" />
+			<span asp-validation-for="Naziv" class="text-danger"></span>
+	</div>
+	<div class="mb-2">
+		<label asp-for="GodinaProizvodnje" class="form-label"></label>
+			<input asp-for="GodinaProizvodnje" class="form-control" />
+			<span asp-validation-for="GodinaProizvodnje" class="text-danger"></span>
+	</div>
+	<div class="mb-2">
+		<label asp-for="Cena" class="form-label"></label>
+			<input asp-for="Cena" class="form-control" />
+			<span asp-validation-for="Cena" class="text-danger"></span>
+	</div>
+	<div class="mb-2">
+		<label asp-for="Opis" class="form-label"></label>
+			<input asp-for="Opis" class="form-control" />
+			<span asp-validation-for="Opis" class="text-danger"></span>
+	</div>
+		<button type="submit" class="btn btn-primary mt-3">Dodaj Oglas</button>
+</form>
