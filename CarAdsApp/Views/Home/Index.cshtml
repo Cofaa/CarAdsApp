@@ -1,8 +1,25 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    
+
+    @if (!Context.Session.Keys.Contains("UserId"))
+    {
+        <div class="alert alert-info">
+            <p>Niste Ulogovani!</p>
+        </div>
+        <a asp-controller="user" asp-action="Register">Register</a>
+        <a asp-controller="user" asp-action="Login">Login</a>
+    }
+    else
+    {
+        <div>
+            <h1 class="display-4">Dobrodosli</h1>
+            <p>Ulogovani ste kao: @Context.Session.GetString("Username")</p>
+            <a asp-controller="Oglas" asp-action="Index">Svi Oglasi</a>
+        </div>
+    }
 </div>

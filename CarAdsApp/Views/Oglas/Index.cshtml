@@ -1,0 +1,48 @@
+﻿@model List<CarAdsApp.Models.Oglas>
+
+@{
+	ViewData["Title"] = "Svi Oglasi";
+}
+
+<h2 class="mb-3">Svi Oglasi</h2>
+
+@if (Context.Session.Keys.Contains("UserId"))
+{
+
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>Marka</th>
+				<th>Naziv</th>
+				<th>Godina Proizvodnje</th>
+				<th>Cena</th>
+				<th>Opis</th>
+				<th>Akcija</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var oglas in Model)
+			{
+				<tr>
+					<td>@oglas.Naziv</td>
+					<td>@oglas.Marka</td>
+					<td>@oglas.GodinaProizvodnje</td>
+					<td>@oglas.Cena</td>
+					<td>@oglas.Opis</td>
+				</tr>	
+			}
+		</tbody>
+	</table>
+
+
+
+
+
+	<a asp-controller="Oglas" asp-action="DodajOglas" class="btn btn-primary mb-3">Dodaj Oglas</a>
+}
+else
+{
+	<div class="alert alert-warning">
+		Pristup je dozvoljen samo ulogovanim korisnicima.
+	</div>
+}

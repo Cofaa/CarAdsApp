@@ -15,6 +15,12 @@ namespace CarAdsApp.Controllers
 
         public IActionResult Index()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                // User is authenticated, redirect to the main page
+                return RedirectToAction("Index", "Oglasi");
+            }
+            
             return View();
         }
 

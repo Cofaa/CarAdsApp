@@ -1,5 +1,6 @@
 ﻿using CarAdsApp.Models;
 using CarAdsApp.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 using System.Text;
@@ -33,6 +34,8 @@ namespace CarAdsApp.Controllers
         //    return Content("Test oglas ubačen (ako je sve OK)");
         //}
 
+
+
         [HttpGet]
         public IActionResult DodajOglas() // Akcija za prikaz svih oglasa
         {
@@ -54,6 +57,10 @@ namespace CarAdsApp.Controllers
 
         public IActionResult Index()
         {
+            if(!HttpContext.Session.Keys.Contains("UserId")) // Proverava da li je korisnik prijavljen
+            {
+                return RedirectToAction("Index", "Home"); // Preusmerava na početnu stranicu ako korisnik nije prijavljen
+            }
             var oglasi = _oglasiServices.GetAll(); // Prikaz svih oglasa
             return View(oglasi); // Vraća pogled sa svim oglasima
         }
