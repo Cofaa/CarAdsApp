@@ -10,12 +10,12 @@ namespace CarAdsApp.Controllers
     public class OglasController : Controller
     {
         private readonly OglasiServices _oglasiServices; // Servis za oglase
-      //  private readonly UserServices _userServices; // Servis za korisnike
+                                                         //  private readonly UserServices _userServices; // Servis za korisnike
 
         public OglasController(OglasiServices oglasiServices, UserServices userServices) // Konstruktori
         {
             _oglasiServices = oglasiServices; // Inicijalizacija servisa
-        //    _userServices = userServices; // Inicijalizacija servisa
+                                              //    _userServices = userServices; // Inicijalizacija servisa
         }
 
         //public IActionResult TestInsert()
@@ -57,7 +57,7 @@ namespace CarAdsApp.Controllers
 
         public IActionResult Index()
         {
-            if(!HttpContext.Session.Keys.Contains("UserId")) // Proverava da li je korisnik prijavljen
+            if (!HttpContext.Session.Keys.Contains("UserId")) // Proverava da li je korisnik prijavljen
             {
                 return RedirectToAction("Index", "Home"); // Preusmerava na početnu stranicu ako korisnik nije prijavljen
             }
@@ -65,5 +65,16 @@ namespace CarAdsApp.Controllers
             return View(oglasi); // Vraća pogled sa svim oglasima
         }
 
+
+        public IActionResult Detalji(string id)
+        {
+            if (!HttpContext.Session.Keys.Contains("UserId")) // Proverava da li je korisnik prijavljen
+            {
+                return RedirectToAction("Index", "Home"); // Preusmerava na početnu stranicu ako korisnik nije prijavljen
+            }
+
+            var oglas = _oglasiServices.GetById(id); // Prikaz detalja oglasa
+            return View(oglas); // Vraća pogled sa detaljima oglasa
+        }
     }
 }
