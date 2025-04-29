@@ -12,6 +12,10 @@ namespace CarAdsApp.Models
         [BindNever] // ⬅⬅⬅⬅⬅⬅⬅⬅⬅⬅⬅
         public string Id { get; set; }
 
+        [BindNever] //
+        public string KorisnikId { get; set; } // ID korisnika koji je postavio oglas
+
+
         [Required(ErrorMessage = "Naziv je obavezan.")]
         public string Naziv { get; set; }
 
@@ -28,5 +32,7 @@ namespace CarAdsApp.Models
 
         [Required(ErrorMessage = "Opis je obavezan.")]
         public string Opis { get; set; }
+
+
     }
 }

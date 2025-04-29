@@ -20,11 +20,22 @@ namespace CarAdsApp.Services
             return _users.Find(user => true).ToList(); // Pronalazi sve korisnike
         }
 
+        public User GetById(string id)
+        {
+            return _users.Find(user => user.Id == id).FirstOrDefault();
+        }
+
         public User GetByUsername(string username)
         {
             return _users.Find(user => user.Username == username).FirstOrDefault(); // Pronalazi korisnika po korisničkom imenu
         }
 
+        public string GetUsernameById(string id)
+        {
+            return _users.Find(user => user.Id == id)
+                         .Project(user => user.Username)
+                         .FirstOrDefault(); // Pronalazi korisnika po ID-u i vraća korisničko ime
+        }
         public void Create(User user)
         {
             _users.InsertOne(user); // Unosi novog korisnika

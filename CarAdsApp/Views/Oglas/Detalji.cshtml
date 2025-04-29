@@ -1,7 +1,9 @@
-﻿@model CarAdsApp.Models.Oglas
+﻿@model CarAdsApp.Models.OglasDetaljiVM
 
 @{
     ViewData["Title"] = "Detalji Oglasa";
+    var loggedInUserId = Context.Session.GetString("UserId");
+	// var loggedInUserUsername = Context.Session.GetString("Username");
 }
 
 <h2 class="mb-3">Detalji Oglasa</h2>
@@ -21,7 +23,20 @@
 
         <dt class="col-sm-2">Opis</dt>
         <dd class="col-sm-10">@Model.Opis</dd>
+        <dt class="col-sm-2">Korisnik</dt>
+        <dd class="col-sm-10">@Model.KorisnikUsername</dd>
     </dl>
 </div>
+
+
+
+
+@*Samo ako je korisnik uglada prikazi dugmad Delete i Edit*@
+
+@if (Model.KorisnikId == loggedInUserId)
+{
+        <a asp-controller="Oglas" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning mt-3">Izmeni Oglas</a>
+        <a asp-controller="Oglas" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger mt-3">Obrisi Oglas</a>
+}
 
 <a asp-controller="Oglas" asp-action="Index" class="btn btn-secondary mt-3">Nazad na oglase</a>

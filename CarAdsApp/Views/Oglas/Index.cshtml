@@ -16,7 +16,6 @@
 				<th>Naziv</th>
 				<th>Godina Proizvodnje</th>
 				<th>Cena</th>
-				<th>Opis</th>
 				<th>Akcija</th>
 			</tr>
 		</thead>
@@ -28,8 +27,7 @@
 					<td>@oglas.Marka</td>
 					<td>@oglas.GodinaProizvodnje</td>
 					<td>@oglas.Cena</td>
-					<td>@oglas.Opis</td>
-									<td><a asp-controller="Oglas" asp-action="Detalji" asp-route-id="@oglas.Id">Pogledaj Oglas</a></td>
+					<td><a asp-controller="Oglas" asp-action="Detalji" asp-route-id="@oglas.Id">Pogledaj Oglas</a></td>
 				</tr>	
 			}
 		</tbody>
