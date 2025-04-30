@@ -1,28 +1,35 @@
-﻿using AspNetCoreGeneratedDocument;
-using CarAdsApp.Models;
+﻿using CarAdsApp.Models;
+using CarAdsApp.Models.ViewModels;
 using CarAdsApp.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace CarAdsApp.Controllers
 {
     public class OglasController : Controller
     {
-        private readonly OglasiServices _oglasiServices; // Servis za oglase
-        private readonly UserServices _userServices; // Servis za korisnike
+        private readonly OglasiServices _oglasiServices;
+        private readonly UserServices _userServices;
 
-        public OglasController(OglasiServices oglasiServices, UserServices userServices) // Konstruktori
+        public OglasController(OglasiServices oglasiServices, UserServices userServices)
         {
-            _oglasiServices = oglasiServices; // Inicijalizacija servisa
-            _userServices = userServices; // Inicijalizacija servisa
+            _oglasiServices = oglasiServices;
+            _userServices = userServices;
         }
 
         [HttpGet]
-        public IActionResult DodajOglas() // Akcija za prikaz svih oglasa
+        public IActionResult Index()
         {
-            return View(); // Vraća pogled za dodavanje oglasa
+            if (!HttpContext.Session.Keys.Contains("UserId"))
+                return RedirectToAction("Index", "Home");
+
+            var oglasi = _oglasiServices.GetAll();
+            return View(oglasi);
+        }
+
+        [HttpGet]
+        public IActionResult DodajOglas()
+        {
+            return View();
         }
 
         [HttpPost]
@@ -30,46 +37,29 @@ namespace CarAdsApp.Controllers
         {
             ModelState.Remove(nameof(Oglas.Id));
             ModelState.Remove(nameof(Oglas.KorisnikId));
+
             if (!ModelState.IsValid)
-            {
-                return View(oglas); // Vrati view sa validacionim greškama
-            }
+                return View(oglas);
 
-            oglas.KorisnikId = HttpContext.Session.GetString("UserId"); // Dobija ID korisnika iz sesije
-            if (string.IsNullOrEmpty(oglas.KorisnikId)) // Proverava da li je korisnik prijavljen
-            {
-                return RedirectToAction("Index", "Home"); // Preusmerava na početnu stranicu ako korisnik nije prijavljen
-            }
-            _oglasiServices.Create(oglas); // Insert u MongoDB
-            return RedirectToAction("Index", "Home");
+            oglas.KorisnikId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(oglas.KorisnikId))
+                return RedirectToAction("Index", "Home");
+
+            _oglasiServices.Create(oglas);
+            return RedirectToAction("Index");
         }
 
-        public IActionResult Index()
-        {
-            if (!HttpContext.Session.Keys.Contains("UserId")) // Proverava da li je korisnik prijavljen
-            {
-                return RedirectToAction("Index", "Home"); // Preusmerava na početnu stranicu ako korisnik nije prijavljen
-            }
-            var oglasi = _oglasiServices.GetAll(); // Prikaz svih oglasa
-            return View(oglasi); // Vraća pogled sa svim oglasima
-        }
-
+        [HttpGet]
         public IActionResult Detalji(string id)
         {
-            if (!HttpContext.Session.Keys.Contains("UserId")) // Proverava da li je korisnik prijavljen
-            {
-                return RedirectToAction("Index", "Home"); // Preusmerava na početnu stranicu ako korisnik nije prijavljen
-            }
+            if (!HttpContext.Session.Keys.Contains("UserId"))
+                return RedirectToAction("Index", "Home");
 
-            var oglas = _oglasiServices.GetById(id); // Prikaz detalja oglasa
-            if (oglas == null) // Proverava da li je oglas pronađen
-            {
-                return NotFound(); // Vraća 404 ako oglas nije pronađen
-            }
+            var oglas = _oglasiServices.GetById(id);
+            if (oglas == null)
+                return NotFound();
 
-            var userId = HttpContext.Session.GetString("UserId"); // Dobija ID korisnika iz sesije
-            var user = _userServices.GetById(oglas.KorisnikId); // Pronalazi korisnika po ID-u
-
+            var user = _userServices.GetById(oglas.KorisnikId);
             var viewModel = new OglasDetaljiVM
             {
                 Id = oglas.Id,
@@ -79,12 +69,89 @@ namespace CarAdsApp.Controllers
                 Cena = oglas.Cena,
                 Opis = oglas.Opis,
                 KorisnikId = oglas.KorisnikId,
-                KorisnikUsername = user?.Username ?? "Nepoznat Korisnik"// Prikaz korisničkog imena
+                KorisnikUsername = user?.Username ?? "Nepoznat Korisnik"
             };
 
-            return View(viewModel); // Vraća pogled sa detaljima oglasa
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        public IActionResult Edit(string id)
+        {
+            var oglas = _oglasiServices.GetById(id);
+            if (oglas == null)
+                return NotFound();
+
+            var vm = new EditOglasVM
+            {
+                Id = oglas.Id,
+                Naziv = oglas.Naziv,
+                Marka = oglas.Marka,
+                GodinaProizvodnje = oglas.GodinaProizvodnje,
+                Cena = oglas.Cena,
+                Opis = oglas.Opis
+            };
+
+            return View(vm);
+        }
+
+
+        [HttpPost]
+        public IActionResult Edit(EditOglasVM vm)
+        {
+            if (!ModelState.IsValid)
+                return View(vm);
+
+            var oglas = _oglasiServices.GetById(vm.Id);
+            if (oglas == null)
+                return NotFound();
+
+            oglas.Naziv = vm.Naziv;
+            oglas.Marka = vm.Marka;
+            oglas.GodinaProizvodnje = vm.GodinaProizvodnje;
+            oglas.Cena = vm.Cena;
+            oglas.Opis = vm.Opis;
+
+            _oglasiServices.Update(vm.Id, oglas);
+            return RedirectToAction("Index");
+        }
+
+
+        [HttpGet]
+        public IActionResult Delete(string id)
+        {
+            if (!HttpContext.Session.Keys.Contains("UserId"))
+                return RedirectToAction("Index", "Home");
+
+            var oglas = _oglasiServices.GetById(id);
+            if (oglas == null)
+                return NotFound();
+
+            var user = _userServices.GetById(oglas.KorisnikId);
+
+            var vm = new DeleteOglasVM()
+            {
+                Id = oglas.Id,
+                Naziv = oglas.Naziv,
+                Marka = oglas.Marka,
+                GodinaProizvodnje = oglas.GodinaProizvodnje,
+                Cena = oglas.Cena,
+                Opis = oglas.Opis,
+                KorisnikUsername = user?.Username ?? "Nepoznat Korisnik"
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        public IActionResult DeleteConfirmed(string id)
+        {
+            var oglas = _oglasiServices.GetById(id);
+            if (oglas == null)
+                return NotFound();
+
+            _oglasiServices.Delete(id);
+            return RedirectToAction("Index");
         }
     }
 }
-//                KorisnikUsername = user?.Username ?? // Prikaz korisničkog imena
-//}

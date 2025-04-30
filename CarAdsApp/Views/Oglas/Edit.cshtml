@@ -1,0 +1,50 @@
+﻿@model CarAdsApp.Models.ViewModels.EditOglasVM
+
+@{
+    ViewData["Title"] = "Izmeni Oglas";
+}
+
+<h2 class="mb-3">Izmeni Oglas</h2>
+
+<form asp-action="Edit" method="post" class="w-50">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-2">
+        <label asp-for="Marka" class="form-label"></label>
+        <input asp-for="Marka" class="form-control" />
+        <span asp-validation-for="Marka" class="text-danger"></span>
+    </div>
+
+    <div class="mb-2">
+        <label asp-for="Naziv" class="form-label"></label>
+        <input asp-for="Naziv" class="form-control" />
+        <span asp-validation-for="Naziv" class="text-danger"></span>
+    </div>
+
+    <div class="mb-2">
+        <label asp-for="GodinaProizvodnje" class="form-label"></label>
+        <input asp-for="GodinaProizvodnje" class="form-control" />
+        <span asp-validation-for="GodinaProizvodnje" class="text-danger"></span>
+    </div>
+
+    <div class="mb-2">
+        <label asp-for="Cena" class="form-label"></label>
+        <input asp-for="Cena" class="form-control" />
+        <span asp-validation-for="Cena" class="text-danger"></span>
+    </div>
+
+    <div class="mb-2">
+        <label asp-for="Opis" class="form-label"></label>
+        <input asp-for="Opis" class="form-control" />
+        <span asp-validation-for="Opis" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Sačuvaj Izmene</button>
+    <a asp-action="Index" class="btn btn-secondary mt-3">Otkaži</a>
+</form>
+
+@section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+}

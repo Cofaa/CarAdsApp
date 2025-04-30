@@ -34,5 +34,15 @@ namespace CarAdsApp.Services
         {
             _oglasi.InsertOne(oglas); // Unosi novi oglas
         }
+
+        public void Update(string id, Oglas oglas)
+        {
+            _oglasi.ReplaceOne(oglas => oglas.Id == id, oglas); // Ažurira oglas
+        }
+
+        public void Delete(string id)
+        {
+            _oglasi.DeleteOne(oglas => oglas.Id == id); // Briše oglas
+        }
     }
 }
