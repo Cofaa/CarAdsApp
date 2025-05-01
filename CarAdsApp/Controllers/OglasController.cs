@@ -45,6 +45,7 @@ namespace CarAdsApp.Controllers
             if (string.IsNullOrEmpty(oglas.KorisnikId))
                 return RedirectToAction("Index", "Home");
 
+            oglas.Komentari = new List<Komentar>();
             _oglasiServices.Create(oglas);
             return RedirectToAction("Index");
         }
@@ -59,7 +60,8 @@ namespace CarAdsApp.Controllers
             if (oglas == null)
                 return NotFound();
 
-            var user = _userServices.GetById(oglas.KorisnikId);
+            var korisnik = _userServices.GetById(oglas.KorisnikId);
+
             var viewModel = new OglasDetaljiVM
             {
                 Id = oglas.Id,
@@ -69,11 +71,20 @@ namespace CarAdsApp.Controllers
                 Cena = oglas.Cena,
                 Opis = oglas.Opis,
                 KorisnikId = oglas.KorisnikId,
-                KorisnikUsername = user?.Username ?? "Nepoznat Korisnik"
+                KorisnikUsername = korisnik?.Username ?? "Nepoznat Korisnik",
+                Komentari = oglas.Komentari?.Select(k => new KomentarVM
+                {
+                    Tekst = k.Tekst,
+                    KorisnikId = k.KorisnikId,
+                    KorisnikUsername = k.KorisnikUsername,
+                    OglasId = k.OglasId
+                }).ToList() ?? new List<KomentarVM>()
             };
 
             return View(viewModel);
         }
+
+
 
         [HttpGet]
         public IActionResult Edit(string id)
@@ -152,6 +163,60 @@ namespace CarAdsApp.Controllers
 
             _oglasiServices.Delete(id);
             return RedirectToAction("Index");
+        }
+
+
+        [HttpPost]
+        public IActionResult DodajKomentar(KomentarVM model)
+        {
+            ModelState.Remove(nameof(KomentarVM.KorisnikId));
+            ModelState.Remove(nameof(KomentarVM.KorisnikUsername));
+
+            if (!ModelState.IsValid)
+                return RedirectToAction("Detalji", new { id = model.OglasId });
+            var oglas = _oglasiServices.GetById(model.OglasId);
+            if (oglas == null)
+                return NotFound();
+            var komentar = new Komentar
+            {
+                Id = Guid.NewGuid().ToString(),
+                Tekst = model.Tekst,
+                OglasId = model.OglasId,
+                KorisnikId = HttpContext.Session.GetString("UserId"),
+                KorisnikUsername = HttpContext.Session.GetString("Username")
+            };
+            if(oglas.Komentari == null)
+            {
+                oglas.Komentari = new List<Komentar>();
+            }
+            oglas.Komentari.Add(komentar);
+            _oglasiServices.Update(model.OglasId, oglas);
+            Console.WriteLine("Dodavanje komentara za oglas ID: " + model.OglasId);
+
+            return RedirectToAction("Detalji", new { id = model.OglasId });
+        }
+
+        public IActionResult TestKomentar()
+        {
+            var oglas = _oglasiServices.GetAll().FirstOrDefault(); // uzmi prvi oglas
+
+            if (oglas == null)
+                return Content("Nema oglasa");
+
+            if (oglas.Komentari == null)
+                oglas.Komentari = new List<Komentar>();
+
+            oglas.Komentari.Add(new Komentar
+            {
+                Id = Guid.NewGuid().ToString(),
+                OglasId = oglas.Id,
+                Tekst = "TEST KOMENTAR",
+                KorisnikId = "1",
+                KorisnikUsername = "Tester"
+            });
+
+            _oglasiServices.Update(oglas.Id, oglas);
+            return Content("Test komentar dodat");
         }
     }
 }

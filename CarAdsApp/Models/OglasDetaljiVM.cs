@@ -10,5 +10,6 @@
         public string Opis { get; set; } // Opis oglasa
         public string KorisnikId { get; set; } // ID korisnika koji je postavio oglas
         public string KorisnikUsername { get; set; } // Korisničko ime korisnika koji je postavio oglas
+        public List<KomentarVM> Komentari { get; set; } = new(); // Lista komentara vezanih za oglas
     }
 }

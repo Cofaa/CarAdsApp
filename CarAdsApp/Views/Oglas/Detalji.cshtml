@@ -3,40 +3,65 @@
 @{
     ViewData["Title"] = "Detalji Oglasa";
     var loggedInUserId = Context.Session.GetString("UserId");
-	// var loggedInUserUsername = Context.Session.GetString("Username");
 }
 
 <h2 class="mb-3">Detalji Oglasa</h2>
 
-<div>
-    <h4>@Model.Marka</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">Naziv</dt>
-        <dd class="col-sm-10">@Model.Naziv</dd>
+<dl class="row">
+    <dt class="col-sm-3">Naziv</dt>
+    <dd class="col-sm-9">@Model.Naziv</dd>
 
-        <dt class="col-sm-2">Godina Proizvodnje</dt>
-        <dd class="col-sm-10">@Model.GodinaProizvodnje</dd>
+    <dt class="col-sm-3">Marka</dt>
+    <dd class="col-sm-9">@Model.Marka</dd>
 
-        <dt class="col-sm-2">Cena</dt>
-        <dd class="col-sm-10">@Model.Cena €</dd>
+    <dt class="col-sm-3">Godina proizvodnje</dt>
+    <dd class="col-sm-9">@Model.GodinaProizvodnje</dd>
 
-        <dt class="col-sm-2">Opis</dt>
-        <dd class="col-sm-10">@Model.Opis</dd>
-        <dt class="col-sm-2">Korisnik</dt>
-        <dd class="col-sm-10">@Model.KorisnikUsername</dd>
-    </dl>
-</div>
+    <dt class="col-sm-3">Cena</dt>
+    <dd class="col-sm-9">@Model.Cena €</dd>
 
+    <dt class="col-sm-3">Opis</dt>
+    <dd class="col-sm-9">@Model.Opis</dd>
 
-
-
-@*Samo ako je korisnik uglada prikazi dugmad Delete i Edit*@
+    <dt class="col-sm-3">Korisnik</dt>
+    <dd class="col-sm-9">@Model.KorisnikUsername</dd>
+</dl>
 
 @if (Model.KorisnikId == loggedInUserId)
 {
-        <a asp-controller="Oglas" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning mt-3">Izmeni Oglas</a>
-        <a asp-controller="Oglas" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger mt-3">Obrisi Oglas</a>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Izmeni</a>
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Obriši</a>
 }
 
-<a asp-controller="Oglas" asp-action="Index" class="btn btn-secondary mt-3">Nazad na oglase</a>
+<a asp-action="Index" class="btn btn-secondary">Nazad</a>
+
+<hr />
+
+<h4>Komentari</h4>
+@if (Model.Komentari?.Any() ?? false)
+{
+        <ul class="list-group">
+        @foreach (var komentar in Model.Komentari)
+        {
+                    <li class="list-group-item">
+                        <strong>@komentar.KorisnikUsername:</strong><br />
+                @komentar.Tekst
+                    </li>
+        }
+        </ul>
+}
+else
+{
+        <p>Nema komentara za ovaj oglas.</p>
+}
+
+<hr />
+
+<form asp-action="DodajKomentar" asp-controller="Oglas" method="post" class="mt-3">
+    <input type="hidden" name="OglasId" value="@Model.Id" />
+    <div class="form-group">
+        <label for="Tekst">Dodaj komentar</label>
+        <textarea name="Tekst" id="Tekst" class="form-control" required rows="3"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Pošalji</button>
+</form>

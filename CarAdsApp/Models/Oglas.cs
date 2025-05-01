@@ -12,6 +12,9 @@ namespace CarAdsApp.Models
         [BindNever] // ⬅⬅⬅⬅⬅⬅⬅⬅⬅⬅⬅
         public string Id { get; set; }
 
+
+        public List<Komentar> Komentari { get; set; } = new List<Komentar>(); // Lista komentara vezanih za oglas
+
         [BindNever] //
         public string KorisnikId { get; set; } // ID korisnika koji je postavio oglas
 
